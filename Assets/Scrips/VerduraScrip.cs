@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class VerduraScrip : MonoBehaviour
@@ -14,6 +15,17 @@ public class VerduraScrip : MonoBehaviour
     public GameObject objeto;
     public GameObject posicion;
 
+
+    public AudioSource a1;
+    public AudioSource a2;
+    public AudioSource CalabazaCorrecto;
+    public AudioSource EloteCorrecto;
+    public AudioSource PapaCorrecto;
+    public AudioSource errorElote;
+    public AudioSource errorPapa;
+    public AudioSource errorCalabaza;
+    public Text Texto;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,14 +36,20 @@ public class VerduraScrip : MonoBehaviour
     void Update()
     {
 
-        Invoke("Tomar", 5f);
-        //If we release LMB and we have an object in hand, it will reset the carryObject.
+        Invoke("Tomar", 3f);
+        
         if (objeto.transform.position.x >= 2.40 && objeto.transform.position.y >= 1.70)
         {
-            Invoke("Clasificar", 5f);
+            
+            Invoke("Clasificar", 3f);
         }
+        if (objeto.transform.position.x <= -2.40 && objeto.transform.position.y >= 1.40)
+        {
 
-        //If we have an object in hand, we update its position and smooth it out with basic interpolation.
+            a2.Play();
+            Invoke("Error", 2f);
+        }
+      
         if (haveObject)
         {
             carryObject.position = Vector3.Lerp(carryObject.position, Camera.main.transform.position + Camera.main.transform.forward * carryDistance, Time.deltaTime * 8);
@@ -44,12 +62,70 @@ public class VerduraScrip : MonoBehaviour
 
         if (haveObject)
         {
+            a1.Play();
             haveObject = false;
             carryObject.GetComponent<Rigidbody>().useGravity = true;
             objeto.transform.position = posicion.transform.position;
             carryObject = null;
+
+            Invoke("Sonido", 1f);
         }
 
+    }
+
+    public void Sonido()
+    {
+        if (objeto.name == "Calabaza")
+        {
+            CalabazaCorrecto.Play();
+            Texto.text = "Correcto la Calabaza es una Verdura!!";
+            Invoke("Limpiar", 3f);
+        }
+
+        if (objeto.name == "Elote")
+        {
+            EloteCorrecto.Play();
+            Texto.text = "Correcto el Elote es una Verdura!!";
+            Invoke("Limpiar", 3f);
+        }
+
+        if (objeto.name == "Papa")
+        {
+            PapaCorrecto.Play();
+            Texto.text = "Correcto la Papa es una Verdura!!";
+            Invoke("Limpiar", 3f);
+        }
+
+    }
+
+    private void Error()
+    {
+        if (objeto.name == "Elote")
+        {
+            errorElote.Play();
+            Texto.text = "No el Elote no es una Fruta";
+            Invoke("Limpiar", 3f);
+        }
+
+        if (objeto.name == "Calabaza")
+        {
+            errorCalabaza.Play();
+            Texto.text = "No la Calabaza no es una Fruta";
+            Invoke("Limpiar", 3f);
+        }
+
+        if (objeto.name == "Papa")
+        {
+            errorPapa.Play();
+            Texto.text = "No la Papa no es una Fruta";
+            Invoke("Limpiar", 3f);
+        }
+    }
+
+
+    private void Limpiar()
+    {
+        Texto.text = "";
     }
     public void Tomar()
     {
